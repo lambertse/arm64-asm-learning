@@ -1,16 +1,24 @@
-SPOBJS = simple_printf.o
+LIBOBJS = upper.o
 
+ifdef DEBUG
 DEBUGFLGS = -g
+else
+DEBUGFLGS =
+endif
+LSTFLGS =
 
-GCCFLAGS = -Wall -e _start -arch arm64 
+LDFLAGS = -lSystem -lc -e main -arch arm64
+
+all: uppertst
+
+upper.e.o : upper.s
+	as -arch arm64e $(DEBUGFLAG) $< -o upper.e.o
+
 %.o : %.s
-	as $(DEBUGFLGS) $< -o $@
+	as $(DEBUGFLGS) $(LSTFLGS) $< -o $@
 
-all: simple_printf
+uppertst: uppertst.c upper.s
+	clang -o uppertst uppertst.c upper.s
 
-simple_printf: $(SPOBJS)
-	gcc -o simple_printf $(GCCFLAGS) $(SPOBJS)
-
-clean:
-	rm *.o simple_printf 
-
+lclean:
+	rm -f *.o uppertst
